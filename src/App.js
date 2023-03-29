@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Amplify, API, graphqlOperation } from 'aws-amplify'
 import { createTodo } from './graphql/mutations'
 import { listTodos } from './graphql/queries'
-import { withAuthenticator, Button, Heading, Text, TextField, View } from '@aws-amplify/ui-react'
+import { withAuthenticator, Button, Heading, Text, TextField, View, Card } from '@aws-amplify/ui-react'
 import '@aws-amplify/ui-react/styles.css'
 
 import awsExports from "./aws-exports";
@@ -44,28 +44,34 @@ const App = ({ signOut, user }) => {
 
   return (
     <View style={styles.container}>
-      <Heading level={1}>Hello {user.username}</Heading>
-      <Button style={styles.button}onClick={signOut}>Sign out</Button>
-      <Heading level={2}>Amplify Todos</Heading>
-      <TextField
-        placeholder="Name"
-        onChange={event => setInput('name', event.target.value)}
-        style={styles.input}
-        defaultValue={formState.name}
-      />
-      <TextField
-        placeholder="Description"
-        onChange={event => setInput('description', event.target.value)}
-        style={styles.input}
-        defaultValue={formState.description}
-      />
-      <Button style={styles.button} onClick={addTodo}>Create Todo</Button>
+      <View style={styles.navbar}>
+        <Heading style={styles.title} level={1}>Amplify Todos</Heading>
+        <View style={ styles.account }>
+          <View style={styles.username}>{user.username}</View>
+          <Button onClick={signOut}>Sign out</Button>
+        </View>
+      </View>
+      <Card style={styles.createTodo} variation="elevated">
+        <TextField
+          placeholder="Name"
+          onChange={event => setInput('name', event.target.value)}
+          style={styles.input}
+          defaultValue={formState.name}
+        />
+        <TextField
+          placeholder="Description"
+          onChange={event => setInput('description', event.target.value)}
+          style={styles.input}
+          defaultValue={formState.description}
+        />
+        <Button style={styles.button} onClick={addTodo} variation="primary">Create Todo</Button>
+      </Card>
       {
         todos.map((todo, index) => (
-          <View key={todo.id ? todo.id : index} style={styles.todo}>
+          <Card key={todo.id ? todo.id : index} style={styles.todo} variation="outlined">
             <Text style={styles.todoName}>{todo.name}</Text>
             <Text style={styles.todoDescription}>{todo.description}</Text>
-          </View>
+          </Card>
         ))
       }
     </View>
@@ -73,12 +79,17 @@ const App = ({ signOut, user }) => {
 }
 
 const styles = {
-  container: { width: 400, margin: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 20 },
-  todo: {  marginBottom: 15 },
-  input: { border: 'none', backgroundColor: '#ddd', marginBottom: 10, padding: 8, fontSize: 18 },
-  todoName: { fontSize: 20, fontWeight: 'bold' },
+  container: { maxWidth: 500, margin: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 20 },
+  navbar: { display: 'flex', alignItems: 'center' },
+  title: { fontSize: 30, marginRight: 'auto' },
+  account: { textAlign: 'right' },
+  username: { marginRight: '10px', display: 'inline' },
+  createTodo: { margin: '45px 0', padding: 20, borderRadius: '0.25rem', textAlign: 'right' },
+  todo: {  marginBottom: 15, borderColor: '#dddddd', borderRadius: '0.25rem' },
+  input: { border: 'none', backgroundColor: '#ddd', textAlign: 'left', marginBottom: 10, padding: 8, fontSize: 15 },
+  todoName: { fontSize: 17, fontWeight: 'bold' },
   todoDescription: { marginBottom: 0 },
-  button: { backgroundColor: 'black', color: 'white', outline: 'none', fontSize: 18, padding: '12px 0px' }
+  button: { fontSize: 15 }
 }
 
 export default withAuthenticator(App)
